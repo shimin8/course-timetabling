@@ -15,7 +15,30 @@ const string MAP="yxxzyx";
 const int SUB[SUBJECTS_SIZE]={7,3,6,4,5,5};
 const int PROF[PROFESSORS_SIZE]={13,12,5};
 
+int random_num(int start, int end)
+{
+    int range=end-start+1;
 
+    return start+(rand()%range);
+}
+
+char mutatedGene()
+{
+    int l=SUBJECTS_SIZE;
+    int r=random_num(0, l-1);
+
+    return SUBJECTS[r];
+}
+
+string createGnome()
+{
+    int l=PERIODS*DAYS;
+    string gnome="";
+    for(int i=0;i<l;i++)
+        gnome+=mutatedGene();
+
+    return gnome;
+}
 
 class Individual
 {
@@ -34,12 +57,13 @@ class Individual
     {
     	int l=PERIODS*DAYS, conflicts=0;
 
-        for(int i=0;i<SUBJECTS_SIZE;i++) {
+        for(int i=0;i<SUBJECTS_SIZE;i++)
+        {
             int c=0;
             char sub=SUBJECTS[i];
 
             c=count(chromosome.begin(), chromosome.end(), sub);
-            
+
             conflicts+=abs(c-SUB[i]);
         }
 
@@ -51,10 +75,8 @@ class Individual
     	int l=PERIODS*DAYS, conflicts=0;
 
     	for(int i=0;i<l-1;i++)
-    	{
     		if(chromosome[i]==chromosome[i+1])
     			conflicts++;
-    	}
 
     	return conflicts;
     }
@@ -84,4 +106,12 @@ void display(vector <Individual> population)
 int main()
 {
 	vector <Individual> population;
+
+	for(int i=0;i<POPULATION_SIZE;i++)
+	{
+        string gnome=createGnome();
+        population.push_back(Individual(gnome));
+    }
+
+    bool found=false;
 }
