@@ -15,12 +15,58 @@ const string MAP="yxxzyx";
 const int SUB[SUBJECTS_SIZE]={7,3,6,4,5,5};
 const int PROF[PROFESSORS_SIZE]={13,12,5};
 
+
+
 class Individual
 {
     public:
 
     string chromosome;
     int fitness;
+
+    Individual(string str)
+    {
+        chromosome=str;
+        fitness=calcFitness();
+    }
+
+    int conflictSubHours()
+    {
+    	int l=PERIODS*DAYS, conflicts=0;
+
+        for(int i=0;i<SUBJECTS_SIZE;i++) {
+            int c=0;
+            char sub=SUBJECTS[i];
+
+            c=count(chromosome.begin(), chromosome.end(), sub);
+            
+            conflicts+=abs(c-SUB[i]);
+        }
+
+        return conflicts;
+    }
+
+    int conflictSubCont()
+    {
+    	int l=PERIODS*DAYS, conflicts=0;
+
+    	for(int i=0;i<l-1;i++)
+    	{
+    		if(chromosome[i]==chromosome[i+1])
+    			conflicts++;
+    	}
+
+    	return conflicts;
+    }
+
+    int calcFitness()
+    {
+        int fitness=0;
+        fitness+=conflictSubHours();
+        fitness+=conflictSubCont();
+        
+        return fitness;
+    }
 };
 
 void display(vector <Individual> population)
@@ -37,5 +83,5 @@ void display(vector <Individual> population)
 
 int main()
 {
-	vector<Individual> population;
+	vector <Individual> population;
 }
