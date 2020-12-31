@@ -75,9 +75,27 @@ class Individual
     	int l=PERIODS*DAYS, conflicts=0;
 
     	for(int i=0;i<l-1;i++)
-    		if(chromosome[i]==chromosome[i+1])
+    		if(chromosome[i]==chromosome[i+1]&&i%PERIODS!=5)
     			conflicts++;
 
+    	return conflicts;
+    }
+
+    int conflictProfHours()
+    {
+    	int l=PERIODS*DAYS, conflicts=0;
+
+    	for(int i=0;i<PROFESSORS_SIZE;i++)
+    	{
+    		char prof=PROFESSORS[i];
+    		int c=0;
+
+    		for(int j=0;j<l;j++)
+    			if(prof==MAP[chromosome[j]-'A'])
+    				c++;
+
+    		conflicts+=abs(c-PROF[i]);
+    	}
     	return conflicts;
     }
 
@@ -86,6 +104,7 @@ class Individual
         int fitness=0;
         fitness+=conflictSubHours();
         fitness+=conflictSubCont();
+        fitness+=conflictProfHours();
         
         return fitness;
     }
@@ -127,6 +146,8 @@ bool cmp(Individual a, Individual b)
 
 int main()
 {
+	srand((unsigned)(time(0)));
+	
 	vector <Individual> population;
 
 	for(int i=0;i<POPULATION_SIZE;i++)
@@ -139,7 +160,7 @@ int main()
 
     while(1)
     {
-    	sort(population.begin(), population.end());
+    	sort(population.begin(), population.end(), cmp);
 
     	if(population[0].fitness<=0||c>=500) break;
 
@@ -162,7 +183,7 @@ int main()
     		newGeneration.push_back(offspring);
     	}
 
-    	sort(newGeneration.begin(), newGeneration.end());
+    	sort(newGeneration.begin(), newGeneration.end(), cmp);
 
     	if(newGeneration[0].fitness==population[0].fitness)
     		c++;
