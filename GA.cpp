@@ -89,18 +89,40 @@ class Individual
         
         return fitness;
     }
+
+    Individual mate(Individual parent2)
+    {
+    	string offspring="";
+    	int l=PERIODS*DAYS;
+
+    	for(int i=0;i<l;i++)
+    	{
+    		int p=random_num(0, 100)/100;
+
+    		if(p<0.45) offspring+=chromosome[i];
+    		else if(p<0.9) offspring+=parent2.chromosome[i];
+    		else offspring+=mutatedGene();
+    	}
+
+    	return Individual(offspring);
+    }
 };
 
-void display(vector <Individual> population)
+void display(Individual bestoffspring)
 {
 	int l=PERIODS*DAYS;
 	for(int i=0;i<l;i++)
 	{
 		if(i%PERIODS==0)
 			cout<<endl;
-		cout<<'\t'<<population[0].chromosome[i];
+		cout<<'\t'<<bestoffspring.chromosome[i];
 	}
-	cout<<"\n\tFitness : "<<population[0].fitness<<endl;
+	cout<<"\n\tFitness : "<<bestoffspring.fitness<<endl;
+}
+
+bool cmp(Individual a, Individual b)
+{
+	return a.fitness < b.fitness;
 }
 
 int main()
@@ -113,5 +135,42 @@ int main()
         population.push_back(Individual(gnome));
     }
 
-    bool found=false;
+    int gen=0, c=0;
+
+    while(1)
+    {
+    	sort(population.begin(), population.end());
+
+    	if(population[0].fitness<=0||c>=500) break;
+
+    	vector <Individual> newGeneration;
+    	int s=(10*POPULATION_SIZE)/100;
+    	for(int i=0;i<s;i++)
+    		newGeneration.push_back(population[i]);
+
+    	s=POPULATION_SIZE-s;
+
+    	for(int i=0;i<s;i++)
+    	{
+    		int rnum=random_num(0, 50);
+    		Individual parent1=population[rnum];
+    		rnum=random_num(0, 50);
+    		Individual parent2=population[rnum];
+
+    		Individual offspring=parent1.mate(parent2);
+
+    		newGeneration.push_back(offspring);
+    	}
+
+    	sort(newGeneration.begin(), newGeneration.end());
+
+    	if(newGeneration[0].fitness==population[0].fitness)
+    		c++;
+    	else c=0;
+    	gen++;
+
+    	population=newGeneration;
+    }
+
+    display(population[0]);
 }
